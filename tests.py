@@ -15,14 +15,12 @@ class PartyTests(unittest.TestCase):
         result = self.client.get("/")
         self.assertIn("board games, rainbows, and ice cream sundaes", result.data)
 
-        print result.data
-
     def test_no_rsvp_yet(self):
         # FIXME: Add a test to show we see the RSVP form, but NOT the party details
         result = self.client.get("/")
         self.assertIn("Please RSVP", result.data)
         self.assertNotIn("Party Details", result.data)
-
+        print result.data
         print "Passed no rsvp test"
 
     def test_rsvp(self):
@@ -43,6 +41,10 @@ class PartyTestsDatabase(unittest.TestCase):
 
         self.client = app.test_client()
         app.config['TESTING'] = True
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['RSVP'] = True
 
         # Connect to test database (uncomment when testing database)
         connect_to_db(app, "postgresql:///testdb")
